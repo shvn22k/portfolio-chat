@@ -1,101 +1,230 @@
-import Image from "next/image";
+// src/app/page.js
+'use client'
 
-export default function Home() {
+import { useState, useEffect } from 'react'
+import { Send, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+function TypewriterText({ text, speed = 30 }) {
+  const [displayText, setDisplayText] = useState('')
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isComplete, setIsComplete] = useState(false)
+
+  useEffect(() => {
+    if (!text) return;
+
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex])
+        setCurrentIndex(prev => prev + 1)
+      }, speed)
+
+      return () => clearTimeout(timer)
+    } else {
+      setIsComplete(true)
+    }
+  }, [text, currentIndex, speed])
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      {displayText}
+      {!isComplete && <span className="animate-pulse">▋</span>}
+    </>
+  )
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+const BackgroundShapes = () => {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const updateDimensions = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  if (!isMounted) return null;
+
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      {[...Array(5)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-[#8A6A45] opacity-5"
+          initial={{
+            x: Math.random() * dimensions.width,
+            y: Math.random() * dimensions.height,
+            scale: Math.random() * 2 + 1,
+          }}
+          animate={{
+            x: Math.random() * dimensions.width,
+            y: Math.random() * dimensions.height,
+            scale: Math.random() * 2 + 1,
+          }}
+          transition={{
+            duration: Math.random() * 20 + 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          }}
+          style={{
+            width: `${Math.random() * Math.min(dimensions.width, 400) + 100}px`,
+            height: `${Math.random() * Math.min(dimensions.height, 400) + 100}px`,
+          }}
+        />
+      ))}
     </div>
   );
+};
+
+export default function Home() {
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!input.trim() || loading) return
+
+    const userMessage = { role: 'user', content: input }
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: input }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data.message 
+      }])
+
+    } catch (error) {
+      console.error('Error:', error)
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I'm sorry, there was an error processing your request." 
+      }])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col items-center p-6 md:p-24 bg-[#F7F3EE] relative">
+      <BackgroundShapes />
+      
+      <div className="w-full max-w-3xl mb-6 flex items-center justify-between">
+        <motion.h1 
+          className="text-2xl md:text-3xl font-bold text-[#3D2E22] tracking-tight"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Chat with Shiven's Resume
+        </motion.h1>
+        
+        <motion.a
+          href="https://bento.me/shvn22k" // Add your Bento link here
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 bg-[#8A6A45] text-white rounded-lg hover:bg-[#725838] transition-all duration-200 flex items-center gap-2 text-sm"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+          </svg>
+          Let's Connect
+        </motion.a>
+      </div>
+
+      <motion.div 
+        className="w-full max-w-3xl bg-white/50 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6 flex flex-col h-[80vh]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4 scrollbar-thin scrollbar-thumb-[#8A6A45]/20 scrollbar-track-transparent">
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className={`p-4 rounded-lg backdrop-blur-sm ${
+                  message.role === 'user'
+                    ? 'bg-[#8A6A45]/90 text-white ml-auto hover:bg-[#725838]'
+                    : 'bg-white/80 text-[#3D2E22] border border-[#E6DDD3] hover:border-[#8A6A45]'
+                } max-w-[80%] transition-all duration-200 cursor-default shadow-sm tracking-tight`}
+              >
+                {message.role === 'assistant' && index === messages.length - 1 ? (
+                  <TypewriterText text={message.content} />
+                ) : (
+                  message.content
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="flex gap-2 mt-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me about me..."
+            className="flex-1 p-2 border border-[#E6DDD3] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8A6A45] bg-white/80 text-[#3D2E22] transition-all duration-200 hover:border-[#8A6A45]"
+          />
+          <motion.button 
+            type="submit"
+            disabled={loading}
+            className="p-2 bg-[#8A6A45] text-white rounded-lg hover:bg-[#725838] disabled:opacity-50 transition-all duration-200 flex items-center justify-center w-10 h-10"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
+          </motion.button>
+        </motion.form>
+      </motion.div>
+    </main>
+  )
 }

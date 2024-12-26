@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,10 +8,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: '#8A6A45',
+        secondary: '#725838',
+      },
+      fontFamily: {
+        mono: ['var(--font-jetbrains-mono)', 'monospace'],
       },
     },
   },
   plugins: [],
-};
+}
+
