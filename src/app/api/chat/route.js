@@ -1,24 +1,34 @@
 import { NextResponse } from 'next/server'
 
-export const POST = async (request) => {
+export async function POST(request) {
   try {
     const { message } = await request.json()
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const response = await fetch(`${backendUrl}/v2/chatbot/ask-question/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: message
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
     
-    const responses = [
-      "Hello! I'm happy to help answer your questions about my experience.",
-      "I have extensive experience in web development and software engineering.",
-      "I specialize in React, Node.js, and modern web technologies.",
-      "Feel free to ask me anything specific about my skills or projects!"
-    ]
-    
-    const response = responses[Math.floor(Math.random() * responses.length)]
-    
-    return NextResponse.json({ message: response })
+    return NextResponse.json({ 
+      message: data.answer 
+    })
 
   } catch (error) {
-    console.error('API Error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Failed to process your request' },
       { status: 500 }
     )
   }

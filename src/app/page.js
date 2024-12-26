@@ -26,10 +26,15 @@ function TypewriterText({ text, speed = 30 }) {
   }, [text, currentIndex, speed])
 
   return (
-    <>
-      {displayText}
+    <div className="space-y-2">
+      <div 
+        className="whitespace-pre-line" 
+        dangerouslySetInnerHTML={{ 
+          __html: displayText 
+        }} 
+      />
       {!isComplete && <span className="animate-pulse">▋</span>}
-    </>
+    </div>
   )
 }
 
@@ -86,7 +91,12 @@ const BackgroundShapes = () => {
 };
 
 export default function Home() {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      content: "Hi! I'm an AI trained on Shiven's resume. Feel free to ask me anything about his experience, skills, or projects!"
+    }
+  ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -127,7 +137,7 @@ export default function Home() {
       console.error('Error:', error)
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I'm sorry, there was an error processing your request." 
+        content: "I apologize, but I'm having trouble accessing my knowledge base right now. Please try again in a moment." 
       }])
     } finally {
       setLoading(false)
@@ -172,7 +182,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4 scrollbar-thin scrollbar-thumb-[#8A6A45]/20 scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4 scrollbar-thin scrollbar-thumb-[#8A6A45]/20 scrollbar-track-transparent flex flex-col">
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
@@ -189,7 +199,12 @@ export default function Home() {
                 {message.role === 'assistant' && index === messages.length - 1 ? (
                   <TypewriterText text={message.content} />
                 ) : (
-                  message.content
+                  <div 
+                    className="whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ 
+                      __html: message.content 
+                    }} 
+                  />
                 )}
               </motion.div>
             ))}
