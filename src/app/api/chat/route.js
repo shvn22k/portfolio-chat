@@ -4,6 +4,11 @@ export async function POST(request) {
   try {
     const { message } = await request.json()
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+
+    if (!backendUrl) {
+      console.error('Backend URL is undefined')
+      throw new Error('Backend URL not configured')
+    }
     
     console.log('Sending request to:', backendUrl)
 
@@ -28,7 +33,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error details:', error)
     return NextResponse.json(
-      { error: 'Failed to process your request' },
+      { error: 'Failed to process your request: ' + error.message },
       { status: 500 }
     )
   }
