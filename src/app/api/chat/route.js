@@ -4,6 +4,8 @@ export async function POST(request) {
   try {
     const { message } = await request.json()
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+    
+    console.log('Sending request to:', backendUrl)
 
     const response = await fetch(`${backendUrl}/v2/chatbot/ask-question/`, {
       method: 'POST',
@@ -16,17 +18,15 @@ export async function POST(request) {
     })
 
     if (!response.ok) {
+      console.error('Backend response not ok:', await response.text())
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     const data = await response.json()
-    
-    return NextResponse.json({ 
-      message: data.answer 
-    })
+    return NextResponse.json({ message: data.answer })
 
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error details:', error)
     return NextResponse.json(
       { error: 'Failed to process your request' },
       { status: 500 }
