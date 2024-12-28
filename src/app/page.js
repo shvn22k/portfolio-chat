@@ -137,7 +137,7 @@ export default function Home() {
       console.error('Error:', error)
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I apologize, but I'm having trouble accessing my knowledge base right now. Please try again in a moment." 
+        content: "Starting backend server... Try again in 45-50 seconds" 
       }])
     } finally {
       setLoading(false)
