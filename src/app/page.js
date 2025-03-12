@@ -94,7 +94,7 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm an AI trained on Shiven's resume. Feel free to ask me anything about his experience, skills, or projects!"
+      content: "Hi! I'm an AI careeer consultant. Feel free to ask me anything about tech careers in AIML and software development."
     }
   ])
   const [input, setInput] = useState('')
