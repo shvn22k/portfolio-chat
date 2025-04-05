@@ -119,7 +119,8 @@ export default function Home() {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorData = await response.json()
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
       const data = await response.json()
@@ -135,9 +136,17 @@ export default function Home() {
 
     } catch (error) {
       console.error('Error:', error)
+      let errorMessage = error.message
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection to backend failed')) {
+        errorMessage = "The backend server is starting up. Please try again in a few moments."
+      } else if (error.cause?.code === 'ECONNREFUSED') {
+        errorMessage = "Unable to connect to the backend server. Please check if it's running."
+      }
+      
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "Starting backend server... Try again in 45-50 seconds" 
+        content: errorMessage 
       }])
     } finally {
       setLoading(false)
